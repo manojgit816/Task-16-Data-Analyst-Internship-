@@ -1,0 +1,77 @@
+--Import Libraries--
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+from sklearn.metrics import mean_absolute_error
+import numpy as np
+
+--Load Dataset--
+
+
+
+df = pd.read_csv("sales.csv")
+
+df['Date'] = pd.to_datetime(df['Date'])
+df = df.sort_values('Date')
+
+--Aggregate monthly sales--
+monthly_sales = df.groupby(pd.Grouper(key='Date', freq='M'))['Sales'].sum().reset_index()
+monthly_sales.set_index('Date', inplace=True)
+
+--Plot sales trend--
+plt.figure(figsize=(12,6))
+plt.plot(monthly_sales, label='Monthly Sales')
+plt.title("Monthly Sales Trend")
+plt.legend()
+plt.show()
+
+--Check reasonability--
+monthly_sales['Rolling_Mean'] = monthly_sales['Sales'].rolling(window=3).mean()
+
+monthly_sales[['Sales','Rolling_Mean']].plot(figsize=(12,6))
+plt.title("Sales with Rolling Mean")
+plt.show()
+
+--Train Test Split--
+train = monthly_sales[:-6]
+test = monthly_sales[-6:]
+
+
+--Fit Forecasting Model--
+model = ExponentialSmoothing(train['Sales'],
+                             trend='add',
+                             seasonal=None)
+
+fit_model = model.fit()
+
+forecast = fit_model.forecast(steps=6)
+
+
+--Evaluate model--
+
+mae = mean_absolute_error(test['Sales'], forecast)
+
+mape = np.mean(np.abs((test['Sales'] - forecast) / test['Sales'])) * 100
+
+print("MAE:", mae)
+print("MAPE:", mape)
+
+
+--Plot forecast--
+plt.figure(figsize=(12,6))
+plt.plot(train.index, train['Sales'], label='Train')
+plt.plot(test.index, test['Sales'], label='Test')
+plt.plot(test.index, forecast, label='Forecast', color='red')
+plt.legend()
+plt.title("Sales Forecast")
+plt.show()
+
+
+--Export Forecast to CSV--
+forecast_df = pd.DataFrame({
+    'Date': test.index,
+    'Actual': test['Sales'],
+    'Forecast': forecast
+})
+
+forecast_df.to_csv("forecast_output.csv", index=False)

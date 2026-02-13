@@ -1,0 +1,31 @@
+TASK 16 – TIME SERIES FORECASTING REPORT
+
+Dataset Used:
+Walmart Sales Forecasting Dataset
+
+Objective:
+To analyze historical sales trends and predict future sales using time-series forecasting.
+
+Steps Performed:
+1. Converted date column into datetime format.
+2. Aggregated sales data monthly.
+3. Visualized trend and rolling mean to check seasonality.
+4. Split dataset into train and test sets using time-based split.
+5. Applied Exponential Smoothing forecasting model.
+6. Predicted next 6 months sales.
+7. Evaluated model using MAE and MAPE.
+8. Exported forecast results into CSV file.
+
+Results:
+The model captured the overall sales trend successfully.
+MAPE was below 10%, indicating good forecast accuracy.
+
+Business Use Case:
+Forecasting helps businesses:
+- Plan inventory
+- Allocate budgets
+- Estimate revenue
+- Manage supply chain
+
+Conclusion:
+Time-series forecasting is essential for business planning and demand estimation.
